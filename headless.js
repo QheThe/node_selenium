@@ -2,6 +2,7 @@ const { Builder, By, Key, until } = require('selenium-webdriver')
 const {Options} = require('selenium-webdriver/chrome')
 const fs = require('fs')
 const path = require('path')
+const cheerio = require('cheerio')
 
 const chromeOptions = new Options()
 
@@ -43,6 +44,7 @@ function getPageSource(url, tempPath) {
 
         console.log(pagePath)
 
+        // 读取页面源码缓存
         fs.readFile(pagePath, function(err, data) {
             if (err) reject(err)
             else resolve(data.toString())
@@ -50,16 +52,23 @@ function getPageSource(url, tempPath) {
     })
 }
 
+function getPic (source) {
+    let $ = cheerio.load(source)
+    let imgTags = $('img')
+    console.log(imgTags.attr('src'))
+}
+
 (async function () {
     console.log(chromeOptions.options_.args.join(' '))
     let urlList = [
-        'https://bilibili.com',
-        'https://baidu.com',
-        'https://www.npmjs.com/package/selenium-webdriver',
-        'https://www.jianshu.com/u/30f796232c22'
+        // 'https://bilibili.com',
+        'https://baidu.com'
+        // 'https://www.npmjs.com/package/selenium-webdriver',
+        // 'https://www.jianshu.com/u/30f796232c22'
     ]
     urlList.forEach(async url => {
         let source = await getPageSource(url, './temp/')
-        console.log(source)
+        getPic(source)
+        await sleep(1000 * 500)
     })
 })()
